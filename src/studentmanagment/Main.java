@@ -5,6 +5,7 @@ import java.util.Scanner;
 public class Main {
 
     static Scanner input = new Scanner(System.in);
+
     static Student[] students = new Student[5];
 
     /**
@@ -26,6 +27,14 @@ public class Main {
 
                 case 1:
                     addStudents();
+                    break;
+
+                case 2:
+                    showStudents();
+                    break;
+
+                case 3:
+                    findStudent();
                     break;
 
                 case 4:
@@ -89,6 +98,55 @@ public class Main {
             students[i] = student;
 
             System.out.println("Student added successfully!");
+        }
+    }
+
+    /**
+     * Displays the information of all students currently
+     * stored in the student array.
+     */
+    private static void showStudents() {
+
+        System.out.println("\n========== All Students ==========");
+
+        for (Student student : students) {
+
+            if (student != null) {
+                System.out.println(student.studentInfo());
+                System.out.println("--------------------------------");
+            }
+        }
+    }
+
+    /**
+     * Searches for a student by name and displays the student's
+     * information when a matching record is found.
+     */
+    private static void findStudent() {
+
+        System.out.println("\n========== Find Student ==========");
+
+        System.out.print("Enter student name: ");
+
+        String searchName = input.nextLine();
+
+        boolean found = false;
+
+        for (Student student : students) {
+
+            if (student != null
+                    && student.getName().equalsIgnoreCase(searchName)) {
+
+                System.out.println(student.studentInfo());
+
+                found = true;
+
+                break;
+            }
+        }
+
+        if (!found) {
+            System.out.println("Student not found.");
         }
     }
 }

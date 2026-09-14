@@ -2,7 +2,7 @@ package studentmanagment;
 
 import java.util.Scanner;
 
-
+import studentmanagment.constants.FileConstant;
 
 import java.io.*;
 	
@@ -10,8 +10,6 @@ import java.io.*;
 public class Main {
 
     static Scanner input = new Scanner(System.in);
-
-    static Student[] students = new Student[5];
 
     /**
      * Entry point of the Student Management System.
@@ -22,9 +20,7 @@ public class Main {
         int choice;
 
         do {
-
             printMenu();
-
             choice = input.nextInt();
             input.nextLine();
 
@@ -80,10 +76,7 @@ public class Main {
 	 */
 	private static void addStudents() {
 
-
-		System.out.println("\n========== Add Students ==========***");
-
-		System.out.println("\n========== Add Students ==========#");
+		System.out.println("\n========== Add Students ==========");
 
 		System.out.println("\nEnter student ");
 
@@ -144,13 +137,13 @@ public class Main {
                 String[] data = studentData.split(",");
 
                 // Gets the student's name.
-                String name = data[0];
+                String name = data[FileConstant.NAME_INDEX];
 
                 // Converts the age to int.
-                int age = Integer.parseInt(data[1]);
+                int age = Integer.parseInt(data[FileConstant.AGE_INDEX]);
 
                 // Converts the grade to double.
-                double grade = Double.parseDouble(data[2]);
+                double grade = Double.parseDouble(data[FileConstant.GRADE_INDEX]);
 
                 // Creates a Student object from the file data.
                 Student student =
@@ -218,13 +211,13 @@ public class Main {
                 String[] data = studentData.split(",");
 
                 // Gets the student's name.
-                String name = data[0];
+                String name = data[FileConstant.NAME_INDEX];
 
                 // Converts the age to int.
-                int age = Integer.parseInt(data[1]);
+                int age = Integer.parseInt(data[FileConstant.AGE_INDEX]);
 
                 // Converts the grade to double.
-                double grade = Double.parseDouble(data[2]);
+                double grade = Double.parseDouble(data[FileConstant.GRADE_INDEX]);
 
                 // Creates a Student object from the data.
                 Student student =

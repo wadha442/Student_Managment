@@ -80,7 +80,10 @@ public class Main {
 	 */
 	private static void addStudents() {
 
+
 		System.out.println("\n========== Add Students ==========***");
+
+		System.out.println("\n========== Add Students ==========#");
 
 		System.out.println("\nEnter student ");
 

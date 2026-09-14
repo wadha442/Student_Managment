@@ -1,6 +1,8 @@
 package studentmanagment;
 
 import java.util.Scanner;
+import java.io.*;
+	
 
 public class Main {
 
@@ -70,36 +72,41 @@ public class Main {
         );
     }
 
-    /**
-     * Collects student details from the user, creates Student objects,
-     * and stores them in the student array.
-     */
-    private static void addStudents() {
+	/**
+	 * Collects student details from the user and stores them in file.
+	 */
+	private static void addStudents() {
 
-        System.out.println("\n========== Add Students ==========");
+		System.out.println("\n========== Add Students ==========");
 
-        for (int i = 0; i < students.length; i++) {
+		System.out.println("\nEnter student ");
 
-            System.out.println("\nEnter student " + (i + 1));
+		System.out.print("Name: ");
+		String name = input.nextLine();
 
-            System.out.print("Name: ");
-            String name = input.nextLine();
+		System.out.print("Age: ");
+		int age = input.nextInt();
 
-            System.out.print("Age: ");
-            int age = input.nextInt();
+		System.out.print("Grade: ");
+		double grade = input.nextDouble();
 
-            System.out.print("Grade: ");
-            double grade = input.nextDouble();
+		input.nextLine();
 
-            input.nextLine();
+		try {
 
-            Student student = new Student(name, age, grade);
+			FileWriter writer = new FileWriter("students.txt", true);
 
-            students[i] = student;
+			writer.write(name + "," + age + "," + grade + "\n");
 
-            System.out.println("Student added successfully!");
-        }
-    }
+			writer.close();
+
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+
+		System.out.println("Student added successfully!");
+
+	}
 
     /**
      * Displays the information of all students currently

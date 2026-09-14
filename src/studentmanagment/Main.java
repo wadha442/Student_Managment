@@ -1,6 +1,9 @@
 package studentmanagment;
 
 import java.util.Scanner;
+
+
+
 import java.io.*;
 	
 
@@ -108,52 +111,151 @@ public class Main {
 
 	}
 
-    /**
-     * Displays the information of all students currently
-     * stored in the student array.
+	 /**
+     * Reads all students from the text file
+     * and displays their information.
      */
     private static void showStudents() {
 
+        // Displays the All Students section.
         System.out.println("\n========== All Students ==========");
 
-        for (Student student : students) {
+        try {
 
-            if (student != null) {
+            // Creates a File object representing students.txt.
+            File file = new File("students.txt");
+
+            // Scanner reads data from the text file.
+            Scanner fileReader = new Scanner(file);
+
+            // Checks whether the file contains any students.
+            boolean hasStudents = false;
+
+            // Reads the file one line at a time.
+            while (fileReader.hasNextLine()) {
+
+                // Reads one student's record.
+                String studentData = fileReader.nextLine();
+
+                // Splits the record into name, age, and grade.
+                String[] data = studentData.split(",");
+
+                // Gets the student's name.
+                String name = data[0];
+
+                // Converts the age to int.
+                int age = Integer.parseInt(data[1]);
+
+                // Converts the grade to double.
+                double grade = Double.parseDouble(data[2]);
+
+                // Creates a Student object from the file data.
+                Student student =
+                        new Student(name, age, grade);
+
+                // Displays the student's information.
                 System.out.println(student.studentInfo());
+
+                // Prints a separator between students.
                 System.out.println("--------------------------------");
+
+                // Indicates that at least one student was found.
+                hasStudents = true;
             }
+
+            // Closes the file reader.
+            fileReader.close();
+
+            // Displays a message if the file is empty.
+            if (!hasStudents) {
+
+                System.out.println("No students found.");
+            }
+
+        } catch (IOException e) {
+
+            // Handles the case where the file does not exist.
+            System.out.println("No students file found.");
         }
     }
 
     /**
-     * Searches for a student by name and displays the student's
-     * information when a matching record is found.
+     * Searches for a student by name in the text file
+     * and displays the student's information if found.
      */
     private static void findStudent() {
 
+        // Displays the Find Student section.
         System.out.println("\n========== Find Student ==========");
 
+        // Asks the user for the student's name.
         System.out.print("Enter student name: ");
 
+        // Reads the name entered by the user.
         String searchName = input.nextLine();
 
+        // Stores whether a matching student was found.
         boolean found = false;
 
-        for (Student student : students) {
+        try {
 
-            if (student != null
-                    && student.getName().equalsIgnoreCase(searchName)) {
+            // Creates a File object for students.txt.
+            File file = new File("students.txt");
 
-                System.out.println(student.studentInfo());
+            // Scanner reads the file.
+            Scanner fileReader = new Scanner(file);
 
-                found = true;
+            // Reads each student record from the file.
+            while (fileReader.hasNextLine()) {
 
-                break;
+                // Reads one line from the file.
+                String studentData = fileReader.nextLine();
+
+                // Splits the line into separate values.
+                String[] data = studentData.split(",");
+
+                // Gets the student's name.
+                String name = data[0];
+
+                // Converts the age to int.
+                int age = Integer.parseInt(data[1]);
+
+                // Converts the grade to double.
+                double grade = Double.parseDouble(data[2]);
+
+                // Creates a Student object from the data.
+                Student student =
+                        new Student(name, age, grade);
+
+                // Compares the stored name with the search name.
+                // equalsIgnoreCase() ignores uppercase/lowercase differences.
+                if (student.getName()
+                        .equalsIgnoreCase(searchName)) {
+
+                    // Displays the matching student's information.
+                    System.out.println(student.studentInfo());
+
+                    // Indicates that the student was found.
+                    found = true;
+
+                    // Stops searching after finding the student.
+                    break;
+                }
             }
+
+            // Closes the file reader.
+            fileReader.close();
+
+        } catch (IOException e) {
+
+            // Handles file reading errors.
+            System.out.println("No students file found.");
         }
 
+        // Displays a message if no student was found.
         if (!found) {
+
             System.out.println("Student not found.");
         }
-    }
+    }    
 }

@@ -1,4 +1,4 @@
-package studentmanagment;
+package app.studentmanagment.model;
 
 
 public class Student {

@@ -26,22 +26,20 @@ public class StudentService {
 			studentDAO.addStudent(student);
 		}
 		
-		public void showStudents() {
+		public List<Student> showStudents() {
 			List<Student> students = new ArrayList<Student>();
 			students = studentDAO.getAllStudent();
-
-			for (Student student : students) {
-				System.out.println(student.studentInfo());
-			}
+            return students;
+			
 		}
 
-		public void searchStudent(String studentName) {
+		public String searchStudent(String studentName) {
 			Student student = studentDAO.getStudentByName(studentName);
 
 			if (student == null) {
-				System.out.println("Student not found");
+				return "Student not found";
 			} else {
-				System.out.println(student.studentInfo());
+				return student.studentInfo();
 			}
 		}
 }

@@ -2,8 +2,8 @@ package app.studentmanagment.model;
 
 
 public class Student {
-
-    private String name;
+    private int id;
+	private String name;
     private int age;
     private double grade;
 
@@ -18,6 +18,13 @@ public class Student {
         this.name = name;
         this.age = age;
         this.grade = grade;
+    }
+    
+    public Student(String name, int age, double grade,int id) {
+        this.name = name;
+        this.age = age;
+        this.grade = grade;
+        this.id=id;
     }
 
     /**
@@ -73,7 +80,14 @@ public class Student {
     public double getGrade() {
         return grade;
     }
+    
+    public int getId() {
+		return id;
+	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
     /**
      * Returns a formatted summary of the student's information,
      * including grade level and pass/fail status.

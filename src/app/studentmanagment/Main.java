@@ -1,5 +1,7 @@
 package app.studentmanagment;
  
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import app.studentmanagment.model.Student;
@@ -93,9 +95,19 @@ public class Main {
  
 		Student student = new Student(name, age, grade);
  
-		studentService.addStudent(student);
+		boolean flag=studentService.addStudent(student);
+		if(flag) {
+			System.out.println("Student added successfully");
+			
+		}
 	}
- 
+	
+	static void showStudent() {
+		List<Student> students = new ArrayList<Student>();	
+		for(Student student : students)  {
+			System.out.println(student.studentInfo());
+		}
+	}
 	/**
 	 * Searches for a student by name and displays the student's information if a
 	 * matching student is found.
@@ -111,5 +123,10 @@ public class Main {
 		System.out.println("[INFO] Searching for student: " + searchName);
  
 		studentService.searchStudent(searchName);
+		
+		String searchStudent =studentService.searchStudent(searchName);
+		System.out.println(searchStudent);
+
+
 	}
 }

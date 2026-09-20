@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.studentmanagment.dao.StudentDAO;
+import app.studentmanagment.model.Course;
 import app.studentmanagment.model.Student;
 
 public class StudentService {
@@ -18,12 +19,13 @@ public class StudentService {
 
 	}
 		
-		public void addStudent(Student student) {
+		public boolean addStudent(Student student) {
 			
 			double  totalGreade=student.getGrade()+ATTENDENT_GRADE;
 			student.setGrade(student.getGrade()+totalGreade);
 			
-			studentDAO.addStudent(student);
+			boolean flag=studentDAO.addStudent(student);
+			return flag;
 		}
 		
 		public List<Student> showStudents() {
@@ -41,5 +43,17 @@ public class StudentService {
 			} else {
 				return student.studentInfo();
 			}
+		}
+		
+		// Update
+		public void updateStudent(int id, Student student) {
+			studentDAO.updateStudent(id, student);
+			
+		}
+	 
+		// Delete
+		public void deleteStudent(int id) {
+			studentDAO.deleteStudent(id);
+			
 		}
 }

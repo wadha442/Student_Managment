@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.Scanner;
 
 import app.studentmanagment.constants.FileConstant;
+import app.studentmanagment.model.Course;
 import app.studentmanagment.model.Student;
 import java.io.File;
 public class StudentDAO {
 
 	
 
-	public void addStudent(Student student) {
+	public boolean addStudent(Student student) {
 		try {
 
             System.out.println("[FILE] Opening students.txt for writing...");
@@ -26,12 +27,13 @@ public class StudentDAO {
 
             System.out.println("[INFO] Student saved successfully.");
             
-
+          return true;
         } catch (IOException e) {
 
             System.out.println("[ERROR] Failed to save student.");
             System.out.println("[ERROR] " + e.getMessage());
         }
+		 return false;
 }
 	
 	public List<Student> getAllStudent() {
@@ -110,5 +112,13 @@ public class StudentDAO {
 
 		return student;
 	}
+	// Update
+	public void updateStudent(int id, Student student) {
+		
+	}
 
+	// Delete
+	public void deleteStudent(int id) {
+		
+	}
 }

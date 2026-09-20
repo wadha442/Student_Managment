@@ -95,7 +95,11 @@ public class Main {
  
 		Student student = new Student(name, age, grade);
  
-		studentService.addStudent(student);
+		boolean flag=studentService.addStudent(student);
+		if(flag) {
+			System.out.println("Student added successfully");
+			
+		}
 	}
 	
 	static void showStudent() {

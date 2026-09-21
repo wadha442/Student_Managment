@@ -1,5 +1,6 @@
 package app.studentmanagment.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,21 +22,21 @@ public class StudentService {
 		
 		public boolean addStudent(Student student) {
 			
-			double  totalGreade=student.getGrade()+ATTENDENT_GRADE;
-			student.setGrade(student.getGrade()+totalGreade);
+//			double  totalGreade=student.getGrade()+ATTENDENT_GRADE;
+//			student.setGrade(student.getGrade()+totalGreade);
 			
 			boolean flag=studentDAO.addStudent(student);
 			return flag;
 		}
 		
-		public List<Student> showStudents() {
+		public List<Student> showStudents() throws SQLException {
 			List<Student> students = new ArrayList<Student>();
 			students = studentDAO.getAllStudent();
             return students;
 			
 		}
 
-		public String searchStudent(String studentName) {
+		public String searchStudent(String studentName) throws SQLException {
 			Student student = studentDAO.getStudentByName(studentName);
 
 			if (student == null) {

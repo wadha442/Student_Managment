@@ -1,11 +1,14 @@
 package app.studentmanagment;
  
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import app.studentmanagment.model.Student;
 import app.studentmanagment.service.StudentService;
+import app.studentmanagment.util.DBConnection;
  
 
  
@@ -16,6 +19,7 @@ public class Main {
  
 	public static void main(String[] args) {
  
+		testConnection() ;
 		int option;
  
 		do {
@@ -37,7 +41,7 @@ public class Main {
  
 			case 2:
 				System.out.println("[INFO] Starting Show Students operation.");
-				studentService.showStudents();
+				showStudent();
 				System.out.println("[INFO] Students Showed successfully ");
 				break;
  
@@ -81,32 +85,49 @@ public class Main {
 	 * Adds a new student to the students file.
 	 */
 	static void addStudent() {
- 
-		scanner.nextLine();
- 
-		System.out.println("Enter student name:");
-		String name = scanner.nextLine();
- 
-		System.out.println("Enter student age:");
-		int age = scanner.nextInt();
- 
-		System.out.println("Enter student grade:");
-		double grade = scanner.nextDouble();
- 
-		Student student = new Student(name, age, grade);
- 
-		boolean flag=studentService.addStudent(student);
-		if(flag) {
-			System.out.println("Student added successfully");
-			
-		}
+
+	    scanner.nextLine();
+
+	    // Ask the user to enter the student ID
+	    System.out.println("Enter student ID:");
+	    int id = scanner.nextInt();
+
+	    // Ask the user to enter the student name
+	    scanner.nextLine();
+	    System.out.println("Enter student name:");
+	    String name = scanner.nextLine();
+
+	    // Ask the user to enter the student age
+	    System.out.println("Enter student age:");
+	    int age = scanner.nextInt();
+
+	    // Ask the user to enter the student grade
+	    System.out.println("Enter student grade:");
+	    double grade = scanner.nextDouble();
+
+	    // Create a Student object with the entered data
+	    Student student = new Student(name, age, grade, id);
+
+	    // Send the student to the service layer
+	    boolean flag = studentService.addStudent(student);
+
+	    if (flag) {
+	        System.out.println("Student added successfully");
+	    }
 	}
 	
 	static void showStudent() {
-		List<Student> students = new ArrayList<Student>();	
+		try {
+				List<Student> students = studentService.showStudents();
 		for(Student student : students)  {
 			System.out.println(student.studentInfo());
-		}
+		} 
+		} catch(SQLException e) {
+				 System.out.println("[ERROR] Failed to show students.");
+			        System.out.println("[ERROR] " + e.getMessage());
+			}
+			
+		
 	}
 	/**
 	 * Searches for a student by name and displays the student's information if a
@@ -114,6 +135,7 @@ public class Main {
 	 */
 	private static void searchStudent() {
  
+		try {
 		System.out.println("enter student name:");
  
 		scanner.nextLine();
@@ -122,11 +144,34 @@ public class Main {
  
 		System.out.println("[INFO] Searching for student: " + searchName);
  
-		studentService.searchStudent(searchName);
 		
 		String searchStudent =studentService.searchStudent(searchName);
+		
 		System.out.println(searchStudent);
+		}  catch(SQLException e) {
+			
+			 System.out.println(
+		                "[ERROR] Failed to search student." );
+
+		        System.out.println( "[ERROR] " + e.getMessage()
+		        );
+			
+		}
 
 
+	}
+	
+	public static void testConnection() {
+
+	    try {
+	        Connection connection = DBConnection.getConnection();
+
+	        System.out.println("Connected successfully!");
+
+	        connection.close();
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
 	}
 }

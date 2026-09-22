@@ -11,14 +11,20 @@ import app.studentmanagement.dao.StudentDAO;
 import app.studentmanagment.model.Student;
 import app.studentmanagment.util.DBConnection;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class StudentDBDAOImpl implements StudentDAO {
+
+	private static final Logger logger = LogManager.getLogger(StudentDBDAOImpl.class);
 
 	// Add a new student to the database
 	public boolean addStudent(Student student) {
 
 		// SQL query used to insert a new student
-		String sql = "INSERT INTO Student " + "(Student_id, Student_name, Student_age, Student_grade) "
-				+ "VALUES (?, ?, ?, ?)";
+		String sql = "INSERT INTO Student " + "(Student_name, Student_age, Student_grade) " + "VALUES (?, ?, ?)";
+
+		logger.debug("Starting addStudent. Student name: {}", student.getName());
 
 		try (
 				// Open a connection to the database
@@ -27,31 +33,25 @@ public class StudentDBDAOImpl implements StudentDAO {
 				// Prepare the SQL query
 				PreparedStatement statement = connection.prepareStatement(sql)) {
 
-			// Set the student ID in the first ?
-			statement.setInt(1, student.getId());
-
 			// Set the student name in the second ?
-			statement.setString(2, student.getName());
+			statement.setString(1, student.getName());
 
 			// Set the student age in the third ?
-			statement.setInt(3, student.getAge());
+			statement.setInt(2, student.getAge());
 
 			// Set the student grade in the fourth ?
-			statement.setDouble(4, student.getGrade());
+			statement.setDouble(3, student.getGrade());
 
 			// Execute the INSERT query
 			statement.executeUpdate();
 
-			System.out.println("[INFO] Student saved successfully.");
-
+			logger.info("Student saved successfully. ID: {}", student.getId());
 			return true;
 
 		} catch (SQLException e) {
 
 			// Print an error message if the operation fails
-			System.out.println("[ERROR] Failed to save student.");
-			System.out.println("[ERROR] " + e.getMessage());
-
+			logger.error("Failed to save student. ID: {}", student.getId(), e);
 			return false;
 		}
 	}
@@ -64,6 +64,8 @@ public class StudentDBDAOImpl implements StudentDAO {
 
 		// SQL query used to retrieve all students
 		String sql = "SELECT * FROM Student";
+
+		logger.debug("Starting to retrieve all students.");
 
 		try (
 				// Open a connection to the database
@@ -78,7 +80,6 @@ public class StudentDBDAOImpl implements StudentDAO {
 			// Loop through all returned rows
 			while (resultSet.next()) {
 
-			
 				// Get the student ID from the current row
 				int id = resultSet.getInt("Student_id");
 
@@ -98,9 +99,8 @@ public class StudentDBDAOImpl implements StudentDAO {
 				students.add(student);
 			}
 
-			System.out.println("[INFO] Finished reading students.");
-
-		} 
+			logger.info("Finished reading students. Count: {}", students.size());
+		}
 
 		// Return the list of students
 		return students;
@@ -146,15 +146,17 @@ public class StudentDBDAOImpl implements StudentDAO {
 				// Create a Student object using the retrieved data
 				student = new Student(name, age, grade, id);
 
-				System.out.println("[INFO] Student found: " + name);
+				logger.info("Student found. Name: {}", name);
+			} else {
+
+				logger.warn("Student not found. Name: {}", searchName);
 			}
 
-		} 
+		}
 
 		// Return the student if found, otherwise return null
 		return student;
 	}
-
 
 	// Update
 

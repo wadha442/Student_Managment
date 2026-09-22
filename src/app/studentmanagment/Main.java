@@ -3,11 +3,13 @@ package app.studentmanagment;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
 import app.studentmanagment.model.Student;
-import app.studentmanagment.service.StudentService;
+import app.studentmanagment.service.impl.StudentDBServiceImpl;
+import app.studentmanagment.service.impl.StudentFileDBServiceImpl;
 import app.studentmanagment.util.DBConnection;
  
 
@@ -15,9 +17,10 @@ import app.studentmanagment.util.DBConnection;
 public class Main {
  
 	static Scanner scanner = new Scanner(System.in);
-	static StudentService studentService = new StudentService();
- 
-	public static void main(String[] args) {
+	static StudentDBServiceImpl studentService = new StudentDBServiceImpl();
+	static StudentFileDBServiceImpl fileService = new StudentFileDBServiceImpl();
+
+	public static void main(String[] args) throws Exception {
  
 		testConnection() ;
 		int option;
@@ -27,7 +30,7 @@ public class Main {
 			System.out.println("[INFO] Displaying main menu.");
  
 			showMenu();
- 
+			try {
 			option = scanner.nextInt();
  
 			System.out.println("[INFO] User selected option: " + option);
@@ -59,6 +62,16 @@ public class Main {
 				System.out.println("[ERROR] Incorrect option: " + option);
 				System.out.println("Incorrect option try again");
 			}
+			} catch (InputMismatchException e) {
+
+		        System.out.println("[ERROR] Invalid input.");
+		        System.out.println("[ERROR] Please enter a number from 1 to 4.");
+
+		        // Remove the invalid input
+		        scanner.nextLine();
+
+		        option = 0;
+		    }
  
 		} while (option != 4);
  
@@ -86,80 +99,119 @@ public class Main {
 	 */
 	static void addStudent() {
 
-	    scanner.nextLine();
+	    try {
 
-	    // Ask the user to enter the student ID
-	    System.out.println("Enter student ID:");
-	    int id = scanner.nextInt();
+	        scanner.nextLine();
 
-	    // Ask the user to enter the student name
-	    scanner.nextLine();
-	    System.out.println("Enter student name:");
-	    String name = scanner.nextLine();
+	        System.out.println("Enter student ID:");
+	        int id = scanner.nextInt();
 
-	    // Ask the user to enter the student age
-	    System.out.println("Enter student age:");
-	    int age = scanner.nextInt();
+	        scanner.nextLine();
 
-	    // Ask the user to enter the student grade
-	    System.out.println("Enter student grade:");
-	    double grade = scanner.nextDouble();
+	        System.out.println("Enter student name:");
+	        String name = scanner.nextLine();
 
-	    // Create a Student object with the entered data
-	    Student student = new Student(name, age, grade, id);
+	        System.out.println("Enter student age:");
+	        int age = scanner.nextInt();
 
-	    // Send the student to the service layer
-	    boolean flag = studentService.addStudent(student);
+	        System.out.println("Enter student grade:");
+	        double grade = scanner.nextDouble();
 
-	    if (flag) {
-	        System.out.println("Student added successfully");
+	        Student student = new Student(name, age, grade, id);
+
+	        // Send the student to the DB Service
+	        boolean flag = studentService.addStudent(student);
+
+	        // NEW: If DB fails, use File Service
+	        if (!flag) {
+
+	            System.out.println("[ERROR] Database failed.");
+
+	            System.out.println("[INFO] Switching to File Service...");
+
+	            flag = fileService.addStudent(student);
+	        }
+
+	        if (flag) {
+
+	            System.out.println("Student added successfully");
+
+	        } else {
+
+	            System.out.println("[ERROR] Failed to add student.");
+	        }
+
+	    } catch (InputMismatchException e) {
+
+	        System.out.println("[ERROR] Invalid input.");
+	        scanner.nextLine();
 	    }
 	}
 	
-	static void showStudent() {
-		try {
-				List<Student> students = studentService.showStudents();
-		for(Student student : students)  {
-			System.out.println(student.studentInfo());
-		} 
-		} catch(SQLException e) {
-				 System.out.println("[ERROR] Failed to show students.");
-			        System.out.println("[ERROR] " + e.getMessage());
-			}
-			
-		
-	}
-	/**
-	 * Searches for a student by name and displays the student's information if a
-	 * matching student is found.
-	 */
-	private static void searchStudent() {
- 
-		try {
-		System.out.println("enter student name:");
- 
-		scanner.nextLine();
- 
-		String searchName = scanner.nextLine();
- 
-		System.out.println("[INFO] Searching for student: " + searchName);
- 
-		
-		String searchStudent =studentService.searchStudent(searchName);
-		
-		System.out.println(searchStudent);
-		}  catch(SQLException e) {
-			
-			 System.out.println(
-		                "[ERROR] Failed to search student." );
+	 static void showStudent() throws Exception {
 
-		        System.out.println( "[ERROR] " + e.getMessage()
-		        );
-			
-		}
+	        try {
 
+	            // Try Database Service first
+	            List<Student> students = studentService.showStudents();
 
-	}
+	            for (Student student : students) {
+
+	                System.out.println(student.studentInfo());
+	            }
+
+	        } catch (SQLException e) {
+
+	            // NEW: Database failed
+	            System.out.println("[ERROR] Database failed.");
+
+	            // NEW: Switch to File Service
+	            System.out.println("[INFO] Switching to File Service...");
+
+	            // NEW: Get students from File Service
+	            List<Student> students = fileService.showStudents();
+
+	            for (Student student : students) {
+
+	                System.out.println(student.studentInfo());
+	            }
+	        }
+	    }
+
+	    /**
+	     * Searches for a student by name.
+	     */
+	    private static void searchStudent() throws Exception {
+
+	        System.out.println("enter student name:");
+
+	        scanner.nextLine();
+
+	        String searchName = scanner.nextLine();
+
+	        System.out.println("[INFO] Searching for student: " + searchName);
+
+	        try {
+
+	            // Try Database Service first
+	            String searchStudent = studentService.searchStudent(searchName);
+
+	            System.out.println(searchStudent);
+
+	        } catch (SQLException e) {
+
+	            // NEW: Database failed
+	            System.out.println("[ERROR] Database failed.");
+
+	            // NEW: Switch to File Service
+	            System.out.println("[INFO] Switching to File Service...");
+
+	            // NEW: Search using File Service
+	            String searchStudent = fileService.searchStudent(searchName);
+
+	            System.out.println(searchStudent);
+	        }
+	    }
 	
 	public static void testConnection() {
 
@@ -171,7 +223,7 @@ public class Main {
 	        connection.close();
 
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+	       System.out.println("[ERROR]"+e.getMessage());
 	    }
 	}
 }

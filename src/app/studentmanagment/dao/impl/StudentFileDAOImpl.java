@@ -10,150 +10,151 @@ import java.util.Scanner;
 import app.studentmanagement.dao.StudentDAO;
 import app.studentmanagment.constants.FileConstant;
 import app.studentmanagment.model.Student;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StudentFileDAOImpl implements StudentDAO {
 
-    public boolean addStudent(Student student) {
+	private static final Logger logger = LogManager.getLogger(StudentFileDAOImpl.class);
 
-        try {
+	public boolean addStudent(Student student) {
 
-            System.out.println("[FILE] Opening students.txt for writing...");
+		try {
 
-            FileWriter writer = new FileWriter(FileConstant.FileBath, true);
+			logger.debug("Opening students.txt for writing.");
 
-            writer.write(student.getId() + ","
-                    + student.getName() + ","
-                    + student.getAge() + ","
-                    + student.getGrade() + "\n");
+			FileWriter writer = new FileWriter(FileConstant.FileBath, true);
 
-            writer.close();
+			writer.write(student.getId() + "," + student.getName() + "," + student.getAge() + "," + student.getGrade()
+					+ "\n");
 
-            System.out.println("[INFO] Student saved successfully.");
+			writer.close();
 
-            return true;
+			logger.info("Student saved successfully to file. ID: {}", student.getId());
 
-        } catch (IOException e) {
+			return true;
 
-            System.out.println("[ERROR] Failed to save student.");
-            System.out.println("[ERROR] " + e.getMessage());
-        }
+		} catch (IOException e) {
 
-        return false;
-    }
+			logger.error("Failed to save student to file. ID: {}", student.getId(), e);
+		}
 
-    public List<Student> getAllStudent() {
+		return false;
+	}
 
-        List<Student> students = new ArrayList<Student>();
+	public List<Student> getAllStudent() {
 
-        System.out.println("[INFO] Reading students from students.txt.");
+		List<Student> students = new ArrayList<Student>();
 
-        try {
+		logger.debug("Starting to read students from students.txt.");
 
-            Scanner fileScanner = new Scanner(new File(FileConstant.FileBath));
+		try {
 
-            while (fileScanner.hasNextLine()) {
+			Scanner fileScanner = new Scanner(new File(FileConstant.FileBath));
 
-                String line = fileScanner.nextLine();
+			while (fileScanner.hasNextLine()) {
 
-                // NEW: Skip empty lines
-                if (line.trim().isEmpty()) {
-                    continue;
-                }
+				String line = fileScanner.nextLine();
 
-                String[] data = line.split(",");
+				if (line.trim().isEmpty()) {
+					continue;
+				}
 
-                // NEW: Check that the line contains ID, name, age and grade
-                if (data.length < 4) {
-                    System.out.println("[ERROR] Invalid student data: " + line);
-                    continue;
-                }
+				String[] data = line.split(",");
 
-                int id = Integer.parseInt(data[FileConstant.ID_INDEX]);
+				if (data.length < 4) {
+					logger.warn("Invalid student data found in file: {}", line);
+					continue;
+				}
 
-                String name = data[FileConstant.NAME_INDEX];
+				int id = Integer.parseInt(data[FileConstant.ID_INDEX]);
 
-                int age = Integer.parseInt(data[FileConstant.AGE_INDEX]);
+				String name = data[FileConstant.NAME_INDEX];
 
-                double grade = Double.parseDouble(data[FileConstant.GRADE_INDEX]);
+				int age = Integer.parseInt(data[FileConstant.AGE_INDEX]);
 
-                Student student = new Student(name, age, grade, id);
+				double grade = Double.parseDouble(data[FileConstant.GRADE_INDEX]);
 
-                students.add(student);
-            }
+				Student student = new Student(name, age, grade, id);
 
-            fileScanner.close();
+				students.add(student);
+			}
 
-            System.out.println("[INFO] Finished reading students.");
+			fileScanner.close();
 
-        } catch (IOException e) {
+			logger.info("Finished reading students from file. Count: {}", students.size());
 
-            System.out.println("[ERROR] Failed to read students file.");
-        }
+		} catch (IOException e) {
 
-        return students;
-    }
+			logger.error("Failed to read students file.", e);
+		}
 
-    public Student getStudentByName(String searchName) {
+		return students;
+	}
 
-        Student student = null;
+	public Student getStudentByName(String searchName) {
 
-        try {
+		Student student = null;
 
-            Scanner fileScanner = new Scanner(new File(FileConstant.FileBath));
+		logger.debug("Searching for student in file. Name: {}", searchName);
+		try {
 
-            while (fileScanner.hasNextLine()) {
+			Scanner fileScanner = new Scanner(new File(FileConstant.FileBath));
 
-                String line = fileScanner.nextLine();
+			while (fileScanner.hasNextLine()) {
 
-                // NEW: Skip empty lines
-                if (line.trim().isEmpty()) {
-                    continue;
-                }
+				String line = fileScanner.nextLine();
 
-                String[] data = line.split(",");
+				if (line.trim().isEmpty()) {
+					continue;
+				}
 
-                // NEW: Check data
-                if (data.length < 4) {
-                    continue;
-                }
+				String[] data = line.split(",");
 
-                int id = Integer.parseInt(data[FileConstant.ID_INDEX]);
+				if (data.length < 4) {
 
-                String name = data[FileConstant.NAME_INDEX];
+					logger.warn("Invalid student data found in file: {}", line);
 
-                if (name.equalsIgnoreCase(searchName)) {
+					continue;
+				}
 
-                    int age = Integer.parseInt(data[FileConstant.AGE_INDEX]);
+				int id = Integer.parseInt(data[FileConstant.ID_INDEX]);
 
-                    double grade = Double.parseDouble(data[FileConstant.GRADE_INDEX]);
+				String name = data[FileConstant.NAME_INDEX];
 
-                    student = new Student(name, age, grade, id);
+				if (name.equalsIgnoreCase(searchName)) {
 
-                    System.out.println("[INFO] Student found: " + name);
+					int age = Integer.parseInt(data[FileConstant.AGE_INDEX]);
 
-                    break;
-                }
-            }
+					double grade = Double.parseDouble(data[FileConstant.GRADE_INDEX]);
 
-            fileScanner.close();
+					student = new Student(name, age, grade, id);
 
-        } catch (IOException e) {
+					logger.info("Student found in file. ID: {} Name: {}", id, name);
 
-            System.out.println("[ERROR] Failed to search students file.");
-        }
+					break;
+				}
+			}
 
-        return student;
-    }
+			fileScanner.close();
 
-    // Update
-    public boolean updateStudent(int id, Student student) {
+		} catch (IOException e) {
 
-        return false;
-    }
+			logger.error("Failed to search students file. Name: {}", searchName, e);
+		}
 
-    // Delete
-    public boolean deleteStudent(int id) {
+		return student;
+	}
 
-        return false;
-    }
+	// Update
+	public boolean updateStudent(int id, Student student) {
+
+		return false;
+	}
+
+	// Delete
+	public boolean deleteStudent(int id) {
+
+		return false;
+	}
 }

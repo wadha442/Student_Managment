@@ -1,4 +1,4 @@
-package app.studentmanagment.dao;
+package app.studentmanagment.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,10 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.studentmanagement.dao.StudentDAO;
 import app.studentmanagment.model.Student;
 import app.studentmanagment.util.DBConnection;
 
-public class StudentDAO {
+public class StudentDBDAOImpl implements StudentDAO {
 
 	// Add a new student to the database
 	public boolean addStudent(Student student) {
@@ -77,6 +78,7 @@ public class StudentDAO {
 			// Loop through all returned rows
 			while (resultSet.next()) {
 
+			
 				// Get the student ID from the current row
 				int id = resultSet.getInt("Student_id");
 
@@ -156,13 +158,15 @@ public class StudentDAO {
 
 	// Update
 
-	public void updateStudent(int id, Student student) {
+	public boolean updateStudent(int id, Student student) {
+		return false;
 
 	}
 
 // Delete
 
-	public void deleteStudent(int id) {
+	public boolean deleteStudent(int id) {
+		return false;
 
 	}
 

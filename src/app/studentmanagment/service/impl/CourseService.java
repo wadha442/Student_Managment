@@ -1,10 +1,10 @@
-package app.studentmanagment.service;
+package app.studentmanagment.service.impl;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
-import app.studentmanagment.dao.CourseDAO;
+import app.studentmanagment.dao.impl.CourseDAO;
 import app.studentmanagment.model.Course;
 
 public class CourseService {
@@ -15,6 +15,7 @@ public class CourseService {
 		courseDAO = new CourseDAO();
 	}
  
+	
 	// Create
 	public boolean addCourse(Course course) {
 		 boolean flag = courseDAO.addCourse(course);

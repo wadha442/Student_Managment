@@ -1,59 +1,20 @@
 package app.studentmanagment.service;
-
-import java.util.ArrayList;
+ 
+import java.sql.SQLException;
 import java.util.List;
 
-import app.studentmanagment.dao.StudentDAO;
-import app.studentmanagment.model.Course;
 import app.studentmanagment.model.Student;
+ 
 
-public class StudentService {
+public interface StudentService {
+ 
+	public boolean addStudent(Student student)throws Exception;
+ 
+	public List<Student> showStudents() throws Exception;
+ 
+	public String searchStudent(String studentName) throws Exception;
+ 
+	public boolean updateStudent(int id, Student student);
 
-	
-	private StudentDAO studentDAO;
-	private final int ATTENDENT_GRADE=10;
-	
-	public StudentService() {
-	 
-	studentDAO=new StudentDAO();
-
-	}
-		
-		public boolean addStudent(Student student) {
-			
-			double  totalGreade=student.getGrade()+ATTENDENT_GRADE;
-			student.setGrade(student.getGrade()+totalGreade);
-			
-			boolean flag=studentDAO.addStudent(student);
-			return flag;
-		}
-		
-		public List<Student> showStudents() {
-			List<Student> students = new ArrayList<Student>();
-			students = studentDAO.getAllStudent();
-            return students;
-			
-		}
-
-		public String searchStudent(String studentName) {
-			Student student = studentDAO.getStudentByName(studentName);
-
-			if (student == null) {
-				return "Student not found";
-			} else {
-				return student.studentInfo();
-			}
-		}
-		
-		// Update
-		public void updateStudent(int id, Student student) {
-			studentDAO.updateStudent(id, student);
-			
-		}
-	 
-		// Delete
-		public void deleteStudent(int id) {
-			studentDAO.deleteStudent(id);
-			
-		}
+	public boolean deleteStudent(int id);
 }

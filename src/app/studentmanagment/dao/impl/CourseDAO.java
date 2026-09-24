@@ -1,4 +1,4 @@
-package app.studentmanagment.dao;
+package app.studentmanagment.dao.impl;
 
 
 import java.util.ArrayList;

@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import app.studentmanagement.dao.StudentDAO;
 import app.studentmanagment.constants.FileConstant;
+import app.studentmanagment.dao.StudentDAO;
 import app.studentmanagment.model.Student;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,7 +67,7 @@ public class StudentFileDAOImpl implements StudentDAO {
 					continue;
 				}
 
-				int id = Integer.parseInt(data[FileConstant.ID_INDEX]);
+			
 
 				String name = data[FileConstant.NAME_INDEX];
 
@@ -75,7 +75,7 @@ public class StudentFileDAOImpl implements StudentDAO {
 
 				double grade = Double.parseDouble(data[FileConstant.GRADE_INDEX]);
 
-				Student student = new Student(name, age, grade, id);
+				Student student = new Student(name, age, grade);
 
 				students.add(student);
 			}
@@ -118,7 +118,7 @@ public class StudentFileDAOImpl implements StudentDAO {
 					continue;
 				}
 
-				int id = Integer.parseInt(data[FileConstant.ID_INDEX]);
+			
 
 				String name = data[FileConstant.NAME_INDEX];
 
@@ -128,9 +128,9 @@ public class StudentFileDAOImpl implements StudentDAO {
 
 					double grade = Double.parseDouble(data[FileConstant.GRADE_INDEX]);
 
-					student = new Student(name, age, grade, id);
+					student = new Student(name, age, grade);
 
-					logger.info("Student found in file. ID: {} Name: {}", id, name);
+					logger.info("Student found in file.Name: {}", name);
 
 					break;
 				}

@@ -51,11 +51,14 @@ public class StudentDBServiceImpl implements StudentService {
     @Override
     public List<Student> showStudents() throws Exception {
     	List<Student> students = new ArrayList<Student>();
-		;
+		
 		try {
+			logger.info("Retrieving students from database.");
 			students = studentDAO.getAllStudent();
+			logger.info("Students retrieved successfully from database.");
+
 		} catch (Exception e) {
-			System.out.println("[ERROR] Failed to retrieve students from database.");
+			 logger.error("Failed to retrieve students from database. Falling back to file.", e);
 			students = studentFileService.showStudents();
 		}
 
@@ -67,16 +70,20 @@ public class StudentDBServiceImpl implements StudentService {
     public String searchStudent(String studentName) throws Exception {
 
     	try {
+    		   logger.info("Searching for student: {}", studentName);
+
 			Student student = studentDAO.getStudentByName(studentName);
 			studentDAO.updateStudent(1, student);
 
 			if (student == null) {
+				 logger.warn("Student not found: {}", studentName);
 				return "Student not found";
 			} else {
+				 logger.info("Student found: {}", studentName);
 				return student.studentInfo();
 			}
 		} catch (Exception e) {
-			System.out.println("[ERROR] Failed to retrieve student from database.");
+			logger.error("Failed to retrieve student from database.",e);
 			return studentFileService.searchStudent(studentName);
 		}
 

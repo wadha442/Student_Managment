@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.studentmanagement.dao.StudentDAO;
+import app.studentmanagment.dao.StudentDAO;
 import app.studentmanagment.model.Student;
 import app.studentmanagment.util.DBConnection;
 
@@ -50,7 +50,7 @@ public class StudentDBDAOImpl implements StudentDAO {
 
 		} catch (SQLException e) {
 
-			// Print an error message if the operation fails
+			
 			logger.error("Failed to save student. ID: {}", student.getId(), e);
 			return false;
 		}
@@ -59,10 +59,9 @@ public class StudentDBDAOImpl implements StudentDAO {
 	// Get all students from the database
 	public List<Student> getAllStudent() throws SQLException {
 
-		// Create a list to store the students
+		
 		List<Student> students = new ArrayList<Student>();
 
-		// SQL query used to retrieve all students
 		String sql = "SELECT * FROM Student";
 
 		logger.debug("Starting to retrieve all students.");

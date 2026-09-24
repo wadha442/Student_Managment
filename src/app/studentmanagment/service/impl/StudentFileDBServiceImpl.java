@@ -3,7 +3,7 @@ package app.studentmanagment.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.studentmanagement.dao.StudentDAO;
+import app.studentmanagment.dao.StudentDAO;
 import app.studentmanagment.dao.impl.StudentFileDAOImpl;
 import app.studentmanagment.exception.StudentAlreadyExistsException;
 import app.studentmanagment.model.Student;

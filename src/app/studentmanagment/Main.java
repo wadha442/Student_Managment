@@ -197,7 +197,7 @@ public class Main {
 			logger.info("Database connection closed.");
 		
 		} catch (SQLException e) {
-			System.out.println("[ERROR] " + e.getMessage());
+	        logger.error("Failed to connect to the database.", e);
 		}
 	}
 }

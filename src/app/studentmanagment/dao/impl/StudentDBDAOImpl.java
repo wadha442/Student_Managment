@@ -14,52 +14,62 @@ import app.studentmanagment.util.DBConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Provides database access operations for student records.
+ * This class implements the StudentDAO interface and uses JDBC
+ * to communicate with the SQL Server database.
+ */
+
 public class StudentDBDAOImpl implements StudentDAO {
 
 	private static final Logger logger = LogManager.getLogger(StudentDBDAOImpl.class);
 
-	// Add a new student to the database
+	 /**
+     * Adds a new student to the database.
+     *
+     * @param student the student to be added
+     * @return true if the student was added successfully, otherwise false
+     */
+	
 	public boolean addStudent(Student student) {
 
-		// SQL query used to insert a new student
-		String sql = "INSERT INTO Student " + "(Student_name, Student_age, Student_grade) " + "VALUES (?, ?, ?)";
+	    String sql = "INSERT INTO Student "
+	            + "(national_id, Student_name, Student_age, Student_grade) "
+	            + "VALUES (?, ?, ?, ?)";
 
-		logger.debug("Starting addStudent. Student name: {}", student.getName());
+	    logger.debug("Starting addStudent. Student name: {}", student.getName());
 
-		try (
-				// Open a connection to the database
-				Connection connection = DBConnection.getConnection();
+	    try (
+	        Connection connection = DBConnection.getConnection();
+	        PreparedStatement statement = connection.prepareStatement(sql)
+	    ) {
 
-				// Prepare the SQL query
-				PreparedStatement statement = connection.prepareStatement(sql)) {
+	        statement.setString(1, student.getNationalId());
+	        statement.setString(2, student.getName());
+	        statement.setInt(3, student.getAge());
+	        statement.setDouble(4, student.getGrade());
 
-			// Set the student name in the second ?
-			statement.setString(1, student.getName());
+	        int rowsAffected = statement.executeUpdate();
 
-			// Set the student age in the third ?
-			statement.setInt(2, student.getAge());
+	        if (rowsAffected > 0) {
+	            logger.info("Student saved successfully. National ID: {}",
+	                    student.getNationalId());
+	            return true;
+	        }
 
-			// Set the student grade in the fourth ?
-			statement.setDouble(3, student.getGrade());
+	    } catch (SQLException e) {
 
-			// Execute the INSERT query
-			statement.executeUpdate();
+	        logger.error("Failed to save student. National ID: {}",
+	                student.getNationalId(), e);
 
-			logger.info("Student saved successfully. ID: {}", student.getId());
-			return true;
+	        System.out.println("Database Error: " + e.getMessage());
+	    }
 
-		} catch (SQLException e) {
-
-			
-			logger.error("Failed to save student. ID: {}", student.getId(), e);
-			return false;
-		}
+	    return false;
 	}
-
 	// Get all students from the database
 	public List<Student> getAllStudent() throws SQLException {
 
-		
 		List<Student> students = new ArrayList<Student>();
 
 		String sql = "SELECT * FROM Student";
@@ -79,21 +89,13 @@ public class StudentDBDAOImpl implements StudentDAO {
 			// Loop through all returned rows
 			while (resultSet.next()) {
 
-				// Get the student ID from the current row
 				int id = resultSet.getInt("Student_id");
-
-				// Get the student name from the current row
+				String nationalId = resultSet.getString("national_id");
 				String name = resultSet.getString("Student_name");
-
-				// Get the student age from the current row
 				int age = resultSet.getInt("Student_age");
-
-				// Get the student grade from the current row
 				double grade = resultSet.getDouble("Student_grade");
 
-				// Create a Student object using the retrieved data
-				Student student = new Student(name, age, grade, id);
-
+				Student student = new Student(name, nationalId, age, grade, id);
 				// Add the student to the list
 				students.add(student);
 			}
@@ -105,7 +107,13 @@ public class StudentDBDAOImpl implements StudentDAO {
 		return students;
 	}
 
-	// Find a student by name
+
+	   /**
+     * Retrieves all students from the database.
+     *
+     * @return a list containing all students
+     * @throws SQLException if a database access error occurs
+     */
 	public Student getStudentByName(String searchName) throws SQLException {
 
 		// Initialize the student object as null
@@ -130,21 +138,17 @@ public class StudentDBDAOImpl implements StudentDAO {
 			// Check if a student was found
 			if (resultSet.next()) {
 
-				// Get the student ID
 				int id = resultSet.getInt("Student_id");
 
-				// Get the student name
+				String nationalId = resultSet.getString("national_id");
+
 				String name = resultSet.getString("Student_name");
 
-				// Get the student age
 				int age = resultSet.getInt("Student_age");
 
-				// Get the student grade
 				double grade = resultSet.getDouble("Student_grade");
 
-				// Create a Student object using the retrieved data
-				student = new Student(name, age, grade, id);
-
+				student = new Student(name, nationalId, age, grade, id);
 				logger.info("Student found. Name: {}", name);
 			} else {
 
@@ -157,18 +161,107 @@ public class StudentDBDAOImpl implements StudentDAO {
 		return student;
 	}
 
-	// Update
+	
+	   /**
+     * Finds a student by name.
+     *
+     * @param searchName the name of the student to search for
+     * @return the student if found, otherwise null
+     * @throws SQLException if a database access error occurs
+     */
+	public Student getStudentByNationalId(String nationalId) throws SQLException {
 
-	public boolean updateStudent(int id, Student student) {
-		return false;
+		String sql = "SELECT * FROM Student WHERE national_id = ?";
 
+		try (Connection connection = DBConnection.getConnection();
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setString(1, nationalId);
+
+			ResultSet resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				return new Student(resultSet.getString("Student_name"), resultSet.getString("national_id"),
+						resultSet.getInt("Student_age"), resultSet.getDouble("Student_grade"),
+						resultSet.getInt("Student_id"));
+			}
+		}
+
+		return null;
 	}
 
-// Delete
+	   /**
+     * Finds a student by national ID.
+     *
+     * @param nationalId the national ID of the student
+     * @return the student if found, otherwise null
+     * @throws SQLException if a database access error occurs
+     */
+	
+	@Override
+	public boolean updateStudent(String nationalId, Student student) throws SQLException {
 
-	public boolean deleteStudent(int id) {
-		return false;
+	    String sql = "UPDATE Student "
+	            + "SET Student_name = ?, "
+	            + "Student_age = ?, "
+	            + "Student_grade = ? "
+	            + "WHERE national_id = ?";
 
+	    try (
+	        Connection connection = DBConnection.getConnection();
+	        PreparedStatement statement = connection.prepareStatement(sql)
+	    ) {
+
+	        statement.setString(1, student.getName());
+	        statement.setInt(2, student.getAge());
+	        statement.setDouble(3, student.getGrade());
+	        statement.setString(4, nationalId);
+
+	        int rowsAffected = statement.executeUpdate();
+
+	        if (rowsAffected > 0) {
+	            logger.info("Student updated successfully. National ID: {}", nationalId);
+	            return true;
+	        }
+
+	        logger.warn("Student not found. National ID: {}", nationalId);
+	        return false;
+	    }
 	}
+
+	 /**
+     * Deletes a student from the database using their national ID.
+     *
+     * @param nationalId the national ID of the student to delete
+     * @return true if the student was deleted successfully, otherwise false
+     * @throws SQLException if a database access error occurs
+     */
+	
+	@Override
+	public boolean deleteStudent(String nationalId) throws SQLException {
+
+	    String sql = "DELETE FROM Student WHERE national_id = ?";
+
+	    logger.debug("Deleting student from database: {}", nationalId);
+
+	    try (
+	        Connection connection = DBConnection.getConnection();
+	        PreparedStatement statement = connection.prepareStatement(sql)
+	    ) {
+
+	        statement.setString(1, nationalId);
+
+	        int rowsAffected = statement.executeUpdate();
+
+	        if (rowsAffected > 0) {
+	            logger.info("Student deleted successfully: {}", nationalId);
+	            return true;
+	        }
+
+	        logger.warn("Student not found: {}", nationalId);
+	        return false;
+	    }
+	}
+
+	
 
 }

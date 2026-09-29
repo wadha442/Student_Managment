@@ -11,7 +11,9 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import app.studentmanagment.exception.StudentAlreadyExistsException;
+import app.studentmanagment.model.Course;
 import app.studentmanagment.model.Student;
+import app.studentmanagment.service.impl.CourseService;
 import app.studentmanagment.service.impl.StudentDBServiceImpl;
 import app.studentmanagment.service.impl.StudentFileDBServiceImpl;
 import app.studentmanagment.util.DBConnection;
@@ -21,6 +23,7 @@ public class Main {
 	static Scanner scanner = new Scanner(System.in);
 	static StudentDBServiceImpl studentService = new StudentDBServiceImpl();
 	static StudentFileDBServiceImpl fileService = new StudentFileDBServiceImpl();
+	static CourseService courseService = new CourseService();
 	private static final Logger logger = LogManager.getLogger(Main.class);
 
 	public static void main(String[] args) {
@@ -32,70 +35,124 @@ public class Main {
 		int option;
 
 		try {
+
 			do {
+
 				logger.debug("Displaying main menu.");
 
-				showMenu();
+				showMainMenu();
 
 				option = scanner.nextInt();
 
-				logger.info("User selected option: {}", option);
+				logger.info("User selected main menu option: {}", option);
 
 				switch (option) {
 
 				case 1:
-					logger.info("Starting Add Student operation.");
-					addStudent();
+					studentMenu();
 					break;
 
 				case 2:
-					logger.info("Starting Show Students operation.");
-					showStudents();
+					courseMenu();
 					break;
 
 				case 3:
-					logger.info("Starting Search Student operation.");
-					searchStudent();
-					break;
-
-				case 4:
-					logger.info("Starting Update Student operation.");
-					updateStudent();
-					break;
-
-				case 5:
-					logger.info("Starting Delete Student operation.");
-					deleteStudent();
-					break;
-
-				case 6:
 					logger.info("User selected Exit.");
 					System.out.println("Thank you");
 					break;
 
 				default:
-					logger.warn("Incorrect menu option: {}", option);
+					logger.warn("Incorrect main menu option: {}", option);
+
 					System.out.println("Incorrect option try again");
 				}
 
-			} while (option != 6);
+			} while (option != 3);
 
 		} catch (InputMismatchException e) {
+
 			System.out.println("[ERROR] Invalid input");
+
 			logger.error("Invalid menu input.", e);
 		}
 
 		logger.info("Application closed.");
+
 		scanner.close();
 	}
 
-	/**
-	 * Displays the main menu and asks the user to select an option.
-	 */
-	private static void showMenu() {
-		System.out.println("----------------------------\n" + "MENU:\n" + "1. Add Student\n" + "2. Show Students\n"
-				+ "3. Find Student\n" + "4. Update Student\n" + "5. Delete Student\n" + "6. Exit\n"
+	private static void showMainMenu() {
+
+		System.out.println("----------------------------\n" + "       MAIN MENU\n" + "----------------------------\n"
+				+ "1. Student Management\n" + "2. Course Management\n" + "3. Exit\n"
 				+ "Enter the number of the option you want: ");
+	}
+
+	private static void studentMenu() {
+
+		int option;
+
+		do {
+
+			showStudentMenu();
+
+			try {
+
+				option = scanner.nextInt();
+
+				switch (option) {
+
+				case 1:
+					addStudent();
+					break;
+
+				case 2:
+					showStudents();
+					break;
+
+				case 3:
+					searchStudent();
+					break;
+
+				case 4:
+					updateStudent();
+					break;
+
+				case 5:
+					deleteStudent();
+					break;
+
+				case 6:
+					System.out.println("Returning to Main Menu...");
+					break;
+
+				default:
+					System.out.println("Incorrect option try again");
+				}
+
+			} catch (InputMismatchException e) {
+
+				logger.error("Invalid Student menu input.", e);
+
+				System.out.println("[ERROR] Invalid input");
+
+				scanner.nextLine();
+
+				option = 0;
+			}
+
+		} while (option != 6);
+	}
+
+	/**
+	 * Displays the Student Management menu.
+	 */
+	private static void showStudentMenu() {
+
+		System.out.println(
+				"\n----------------------------\n" + "    STUDENT MANAGEMENT\n" + "----------------------------\n"
+						+ "1. Add Student\n" + "2. Show Students\n" + "3. Find Student\n" + "4. Update Student\n"
+						+ "5. Delete Student\n" + "6. Back\n" + "Enter the number of the option you want: ");
 	}
 
 	/**
@@ -243,6 +300,281 @@ public class Main {
 			System.out.println("Student deleted successfully.");
 		} else {
 			System.out.println("Student not found or delete failed.");
+		}
+	}
+
+	/**
+	 * Displays the Course Management menu.
+	 */
+	private static void courseMenu() {
+
+		int option;
+
+		do {
+
+			showCourseMenu();
+
+			try {
+
+				option = scanner.nextInt();
+
+				switch (option) {
+
+				case 1:
+
+					logger.info("Starting Add Course operation.");
+
+					addCourse();
+
+					break;
+
+				case 2:
+
+					logger.info("Starting Show Courses operation.");
+
+					showCourses();
+
+					break;
+
+				case 3:
+
+					logger.info("Starting Find Course operation.");
+
+					findCourse();
+
+					break;
+
+				case 4:
+
+					logger.info("Starting Update Course operation.");
+
+					updateCourse();
+
+					break;
+
+				case 5:
+
+					logger.info("Starting Delete Course operation.");
+
+					deleteCourse();
+
+					break;
+
+				case 6:
+
+					System.out.println("Returning to Main Menu...");
+
+					break;
+
+				default:
+
+					System.out.println("Incorrect option try again");
+				}
+
+			} catch (InputMismatchException e) {
+
+				logger.error("Invalid Course menu input.", e);
+
+				System.out.println("[ERROR] Invalid input");
+
+				scanner.nextLine();
+
+				option = 0;
+			}
+
+		} while (option != 6);
+	}
+
+	/**
+	 * Displays the Course Management menu.
+	 */
+	private static void showCourseMenu() {
+
+		System.out.println(
+				"\n----------------------------\n" + "     COURSE MANAGEMENT\n" + "----------------------------\n"
+						+ "1. Add Course\n" + "2. Show Courses\n" + "3. Find Course\n" + "4. Update Course\n"
+						+ "5. Delete Course\n" + "6. Back\n" + "Enter the number of the option you want: ");
+	}
+
+	/**
+	 * Adds a new course to the database.
+	 */
+	private static void addCourse() {
+
+		try {
+
+			scanner.nextLine();
+
+			System.out.println("Enter course name:");
+
+			String name = scanner.nextLine();
+
+			System.out.println("Enter course description:");
+
+			String description = scanner.nextLine();
+
+			System.out.println("Enter course code:");
+
+			String courseCode = scanner.nextLine();
+
+			Course course = new Course(name, description, courseCode);
+
+			boolean added = courseService.addCourse(course);
+
+			if (added) {
+
+				System.out.println("Course added successfully.");
+
+			} else {
+
+				System.out.println("Course was not added.");
+			}
+
+		} catch (IllegalArgumentException e) {
+
+			System.out.println(e.getMessage());
+
+		} catch (SQLException e) {
+
+			logger.error("Failed to add course.", e);
+
+			System.out.println("[ERROR] Database error: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Retrieves and displays all courses.
+	 */
+	private static void showCourses() {
+
+		try {
+
+			List<Course> courses = courseService.showCourses();
+
+			for (Course course : courses) {
+
+				System.out.println(course);
+			}
+
+		} catch (SQLException e) {
+
+			logger.error("Failed to retrieve courses.", e);
+
+			System.out.println("[ERROR] Database error: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Finds a course using its course code.
+	 */
+	private static void findCourse() {
+
+		try {
+
+			scanner.nextLine();
+
+			System.out.println("Enter course code:");
+
+			String courseCode = scanner.nextLine();
+
+			Course course = courseService.findCourses(courseCode);
+
+			if (course != null) {
+
+				System.out.println(course);
+
+			} else {
+
+				System.out.println("Course not found.");
+			}
+
+		} catch (SQLException e) {
+
+			logger.error("Failed to find course.", e);
+
+			System.out.println("[ERROR] Database error: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Updates a course using its course code.
+	 */
+	private static void updateCourse() {
+
+		try {
+
+			scanner.nextLine();
+
+			System.out.println("Enter course code:");
+
+			String courseCode = scanner.nextLine();
+
+			System.out.println("Enter new course name:");
+
+			String name = scanner.nextLine();
+
+			System.out.println("Enter new course description:");
+
+			String description = scanner.nextLine();
+
+			System.out.println("Enter new course code:");
+
+			String newCourseCode = scanner.nextLine();
+
+			Course course = new Course(name, description, newCourseCode);
+
+			boolean updated = courseService.updateCourse(courseCode, course);
+
+			if (updated) {
+
+				System.out.println("Course updated successfully.");
+
+			} else {
+
+				System.out.println("Course not found or update failed.");
+			}
+
+		} catch (IllegalArgumentException e) {
+
+			System.out.println(e.getMessage());
+
+		} catch (SQLException e) {
+
+			logger.error("Failed to update course.", e);
+
+			System.out.println("[ERROR] Database error: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Deletes a course using its course code.
+	 */
+	private static void deleteCourse() {
+
+		try {
+
+			scanner.nextLine();
+
+			System.out.println("Enter course code:");
+
+			String courseCode = scanner.nextLine();
+
+			boolean deleted = courseService.deleteCourse(courseCode);
+
+			if (deleted) {
+
+				System.out.println("Course deleted successfully.");
+
+			} else {
+
+				System.out.println("Course not found or delete failed.");
+			}
+
+		} catch (SQLException e) {
+
+			logger.error("Failed to delete course.", e);
+
+			System.out.println("[ERROR] Database error: " + e.getMessage());
 		}
 	}
 
